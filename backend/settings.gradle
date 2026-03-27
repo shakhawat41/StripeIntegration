@@ -1,0 +1,2 @@
+// Root project name — used as the default artifact name
+rootProject.name = 'payment-processing'

@@ -1,0 +1,49 @@
+# =============================================================================
+# Application Configuration — PaymentProcessing Backend
+# All sensitive/environment-specific values are injected via environment variables.
+# See .env.example at the project root for variable descriptions.
+# =============================================================================
+
+spring:
+  application:
+    name: payment-processing
+
+  # --- Database Configuration ---
+  # PostgreSQL connection settings. In Docker Compose, SPRING_DATASOURCE_URL is set to
+  # jdbc:postgresql://postgres:5432/payment_processing (the postgres service hostname).
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/payment_processing}
+    username: ${POSTGRES_USER:app}
+    password: ${POSTGRES_PASSWORD:app}
+    driver-class-name: org.postgresql.Driver
+
+  # --- JPA / Hibernate Configuration ---
+  # Using auto-DDL for schema generation. In production, replace with Flyway migrations.
+  # 'update' mode creates/alters tables to match entity definitions without dropping data.
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+# --- Stripe Configuration ---
+# API key and webhook secret are required for Stripe SDK initialization and webhook verification.
+# Obtain these from the Stripe Dashboard (https://dashboard.stripe.com/test/apikeys).
+stripe:
+  api-key: ${STRIPE_API_KEY}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET}
+
+# --- OpenTelemetry Configuration ---
+# The OTel Java agent is attached via JAVA_TOOL_OPTIONS in Docker.
+# This endpoint tells the agent where to send telemetry data (OTLP gRPC).
+otel:
+  exporter:
+    otlp:
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4317}
+
+# --- Server Configuration ---
+server:
+  port: 8080

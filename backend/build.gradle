@@ -1,0 +1,64 @@
+plugins {
+    // Spring Boot 4.x plugin — manages dependency versions and provides bootJar/bootRun tasks
+    id 'org.springframework.boot' version '3.4.1'
+
+    // Dependency management plugin — imports Spring Boot's BOM for consistent dependency versions
+    id 'io.spring.dependency-management' version '1.1.7'
+
+    // Java plugin — enables Java compilation, testing, and packaging
+    id 'java'
+}
+
+group = 'com.payment'
+version = '0.0.1-SNAPSHOT'
+
+// Require Java 17+ as mandated by Spring Boot 3.x / Spring Framework 6.x
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // --- Spring Boot Starters ---
+
+    // Spring Web — provides REST controller support, embedded Tomcat, JSON serialization
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Spring Data JPA — ORM layer with Hibernate, JPA repositories, transaction management
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // Spring Boot Actuator — health checks, metrics endpoints for monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // --- Database ---
+
+    // PostgreSQL JDBC driver — connects Spring Data JPA to the PostgreSQL database
+    runtimeOnly 'org.postgresql:postgresql:42.7.4'
+
+    // --- Stripe ---
+
+    // Stripe Java SDK — official SDK for all Stripe API interactions (payments, subscriptions, invoices)
+    implementation 'com.stripe:stripe-java:28.2.0'
+
+    // --- Observability ---
+
+    // OpenTelemetry instrumentation annotations — enables @WithSpan for custom trace spans
+    // The OTel Java agent (attached via JAVA_TOOL_OPTIONS in Docker) handles auto-instrumentation
+    implementation 'io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.11.0'
+
+    // --- Testing ---
+
+    // Spring Boot Test — includes JUnit 5, Mockito, MockMvc, and AssertJ out of the box
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    // Use JUnit 5 platform for running tests
+    useJUnitPlatform()
+}
