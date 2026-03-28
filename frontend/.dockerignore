@@ -1,0 +1,5 @@
+# Ignore everything
+*
+# Allow only the built static files and nginx config
+!dist/
+!nginx.conf

@@ -1,0 +1,38 @@
+plugins {
+    // Spring Boot 3.x plugin — same version as the main backend for consistency
+    id 'org.springframework.boot' version '3.4.1'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+}
+
+group = 'com.payment'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Data JPA — for checking/writing seeder_status records in PostgreSQL
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // PostgreSQL driver
+    runtimeOnly 'org.postgresql:postgresql:42.7.4'
+
+    // Stripe Java SDK — for creating test customers, products, prices, and payment methods
+    implementation 'com.stripe:stripe-java:28.2.0'
+
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

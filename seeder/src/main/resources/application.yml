@@ -1,0 +1,25 @@
+# =============================================================================
+# Seeder Configuration
+# Standalone Spring Boot app that seeds test data into Stripe and PostgreSQL.
+# Runs once as a short-lived Docker container, then exits.
+# =============================================================================
+
+spring:
+  application:
+    name: payment-seeder
+
+  # Database connection — same PostgreSQL instance as the main backend
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/payment_processing}
+    username: ${POSTGRES_USER:app}
+    password: ${POSTGRES_PASSWORD:app}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+# Stripe API key — same test key as the main backend
+stripe:
+  api-key: ${STRIPE_API_KEY}

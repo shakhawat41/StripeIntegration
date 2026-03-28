@@ -1,0 +1,52 @@
+# =============================================================================
+# Docker Compose — Full application stack
+# Runs all services with a single `docker-compose up` command.
+# Environment variables are injected from the .env file at project root.
+# =============================================================================
+
+services:
+  # --- PostgreSQL Database ---
+  # Stores transaction history, installment plans, and seeder status.
+  postgres:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: payment_processing
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-app} -d payment_processing"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # --- Spring Boot Backend ---
+  # Main application server — REST APIs, Stripe SDK integration, webhook handling.
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/payment_processing
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+
+  # --- Frontend (nginx) ---
+  # Serves the React SPA and proxies /api/* requests to the backend.
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

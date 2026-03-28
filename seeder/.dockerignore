@@ -1,0 +1,4 @@
+# Ignore everything
+*
+# Allow only the built JAR
+!build/libs/*.jar
